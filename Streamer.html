@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Lines</title>
+	<script type = "text/javascript" src="jquery.js"></script>
+	<!-- <script type="text/javascript" src="paper.js"></script> -->
+	<script type="text/javascript" src="paperjs-nightly/lib/paper.js">
+	<script type="text/javascript" src="advajax.js"></script>
+	<script type="text/paperscript" canvas="canvas">
+
+
+
+
+var groupOfImgs = new Group ();
+     // Main rectangle builder.
+        var circleMask = new Path.Circle( new Point(0,0), 180);
+        // the mask for this shape.
+        var mask = circleMask;
+        mask.selected = false;
+        groupOfImgs.addChild(mask);
+        groupOfImgs.opacity = 0.99; 
+        groupOfImgs.clipped = true;
+        
+
+
+// gets a list of the 100 most recently uploaded flickr imgs 	 
+function imageReload(){    
+	$(function() {
+    	var apiKey = 'cb08d9656aae3035198e1d51513e18e1';
+    	var userId = '45883345@N08';
+    	var tag = '<COMMA SEPERATED LIST OF TAGS>';
+    	var perPage = '25';
+    	var showOnPage = '6';
+    
+    $.getJSON('http://api.flickr.com/services/rest/?format=json&method='+
+        'flickr.photos.getRecent&api_key=' + apiKey + '&user_id=' + perPage + '&jsoncallback=?', 
+    	// iterates through the list of 100 images at a set pace (so as not to make overload the system)
+    	// recursizly calls itself when it is done going through all 100 
+    	function(data){
+   			//console.log(data);
+			var i = 1;                     
+			var length = 100;
+			function myLoop () {           
+  				setTimeout(function () {    
+     				 makeUrl(data,i);          
+      					i++;                    
+      					if (i < length) {          
+        		 			myLoop();             
+      					}
+      					else if (i === length) 
+      					{
+      						//console.log("bang");
+      						imageReload();
+      					}	                       
+   				}, 900)
+			}
+			//starts it
+			myLoop();
+    });
+});
+}
+
+imageReload();  
+
+//helper function that parses the list into a direct link for image
+function makeUrl(data, iterator){
+    		var farmId = data.photos.photo[iterator].farm;
+    		//console.log (farmId);
+    		var serverId = data.photos.photo[iterator].server; 
+    		var id = data.photos.photo[iterator].id ; 
+    		var secret = data.photos.photo[iterator].secret; 
+    		var img = "http://farm" + farmId + ".staticflickr.com/" + serverId+ "/" +id + "_" + secret +".jpg" ;
+			drawImageMask(img);
+
+}
+
+// draws the flickr images 
+// parameter: image- direct link to current image
+var counter = 0;
+function drawImageMask (image){
+
+	//var canvas = document.getElementById('canvas');
+     
+	
+// draw the images in the background at a gif speed
+	var theImage = new Image();
+
+	theImage.onload = function (){
+		var raster = new Raster(theImage); 
+	
+	// Move the raster to the center of the view
+	raster.position.x = 1750;
+	raster.position.y = 1450;
+	raster.scale(5);
+	groupOfImgs.children[0].position = [raster.position.x, raster.position.y];
+	raster.id = "hello";
+	
+	groupOfImgs.appendTop(raster); 
+	//console.log ("width" + raster.width);
+	for (var i=1; i < groupOfImgs.children.length - 2; i++)
+	{
+		groupOfImgs.children[i].remove();
+	}
+	//console.log(groupOfImgs);
+	}
+	theImage.src = image;
+
+	//trying to get the width of the original image
+	/*
+	console.log ("width1" + theImage.style.width);
+	console.log ("width2" + theImage.width);
+	console.log ("width3" + raster.width);
+	console.log ("size" + raster.size);
+	console.log ("width4" + raster.style.width);
+	console.log ("xpos" + raster.position.x);
+	console.log ("id" + raster.id);
+	console.log ("id" + raster.id);
+	*/
+	
+
+};
+
+// three possible paths to draw on load
+var altPath1 = [new Point (352,76),new Point (356,76),new Point (408,136),new Point (500,232),new Point (560,528),new Point (408,1244),new Point (352,1412),new Point (348,1432),new Point (332,1464),new Point (332,1496),new Point (320,1632),new Point (300,1796),new Point (300,1956),new Point (300,2000),new Point (512,2156),new Point (604,2208),new Point (692,2236),new Point (944,2348),new Point (1164,2344),new Point (1244,2340),new Point (1256,2340),new Point (1368,2388),new Point (1524,2468),new Point (1680,2452),new Point (1756,2480),new Point (1760,2480),new Point (1904,2388),new Point (2052,2380),new Point (2140,2376),new Point (2324,2272),new Point (2524,2220),new Point (2600,2176),new Point (2656,2140),new Point (2768,1964),new Point (2784,1912),new Point (2784,1904),new Point (2876,1736),new Point (2880,1604),new Point (2880,1508),new Point (2880,1308),new Point (2832,1112),new Point (2832,1048),new Point (2836,924),new Point (2876,768),new Point (2904,744),new Point (2908,736),new Point (3028,700),new Point (3124,708),new Point (3200,736),new Point (3340,916),new Point (3356,1100),new Point (3344,1120),new Point (3132,1412),new Point (3100,1600),new Point (3084,1720),new Point (3068,1764),new Point (3068,1776),new Point (3028,1896),new Point (3028,1920),new Point (3008,1976),new Point (2944,2164),new Point (2944,2184),new Point (2944,2212),new Point (2980,2236),new Point (3024,2240),new Point (3084,2236),new Point (3124,2232),new Point (3140,2084),new Point (3192,1984),new Point (3204,1960),new Point (3212,1908),new Point (3256,1924),new Point (3344,2004),new Point (3356,2020),new Point (3416,2028),new Point (3416,1884),new Point (3384,1860),new Point (3324,1840),new Point (3256,1792),new Point (3256,1784),new Point (3228,1764),new Point (3220,1684),new Point (3196,1640),new Point (3196,1596),new Point (3256,1496),new Point (3304,1480),new Point (3332,1456),new Point (3340,1456),new Point (3376,1500),new Point (3368,1576),new Point (3348,1620),new Point (3344,1624),new Point (3344,1660),new Point (3344,1672),new Point (3352,1672),new Point (3392,1672),new Point (3508,1520),new Point (3528,1304),new Point (3540,1232),new Point (3564,1076),new Point (3616,976),new Point (3620,952),new Point (3792,828),new Point (3816,828),new Point (3924,952),new Point (3936,972),new Point (3968,1176),new Point (3904,1396),new Point (3748,1656),new Point (3604,1944),new Point (3600,2148),new Point (3600,2236),new Point (3600,2244),new Point (3684,2264),new Point (3744,2208),new Point (3848,2104),new Point (3904,2040),new Point (3912,2036),new Point (3940,1908),new Point (3952,1884),new Point (3996,1788),new Point (3988,1692),new Point (4024,1636),new Point (4028,1620),new Point (4032,1620),new Point (4108,1620),new Point (4120,1696),new Point (4136,1700),new Point (4180,1688),new Point (4192,1672),new Point (4284,1536),new Point (4284,1272),new Point (4276,1264),new Point (4272,1224),new Point (4256,1148),new Point (4220,1032),new Point (4220,988),new Point (4156,932),new Point (4076,852),new Point (3892,756),new Point (3868,756),new Point (3752,740),new Point (3640,728),new Point (3612,704),new Point (3708,548),new Point (3736,532),new Point (3956,476),new Point (4096,572),new Point (4180,632),new Point (4296,704),new Point (4332,756),new Point (4424,900),new Point (4448,960),new Point (4460,992),new Point (4488,1016),new Point (4512,1116),new Point (4604,1164),new Point (4628,1180),new Point (4680,1204),new Point (4680,1244),new Point (4696,1272),new Point (4580,1376),new Point (4512,1392),new Point (4508,1404),new Point (4432,1552),new Point (4376,1688),new Point (4328,1912),new Point (4332,2124),new Point (4376,2128),new Point (4456,2048),new Point (4512,1928),new Point (4524,1868),new Point (4524,1872),new Point (4532,1888),new Point (4576,1944),new Point (4584,1972),new Point (4608,2016),new Point (4628,2028),new Point (4664,2064),new Point (4820,2008),new Point (4928,2016),new Point (4976,2020),new Point (5128,2052),new Point (5156,2040)];
+var altPath2 = [new Point (340,72),new Point (552,1020),new Point (436,1316),new Point (336,1696),new Point (332,1748),new Point (888,1948),new Point (904,2220),new Point (900,2236),new Point (784,2312),new Point (1316,2356),new Point (1528,2376),new Point (1580,2372),new Point (1680,2464),new Point (1924,2440),new Point (2084,2404),new Point (2152,2424),new Point (2288,2340),new Point (2444,2184),new Point (2640,2004),new Point (2684,1892),new Point (2800,1684),new Point (2876,1228),new Point (2908,940),new Point (2880,908),new Point (2788,772),new Point (2740,740),new Point (2544,656),new Point (2484,636),new Point (2424,592),new Point (2336,572),new Point (2252,580),new Point (2052,528),new Point (1920,320),new Point (2256,300),new Point (2404,296),new Point (2552,260),new Point (2820,256),new Point (2968,228),new Point (3236,216),new Point (3548,256),new Point (3728,492),new Point (3724,516),new Point (3464,696),new Point (3436,676),new Point (3332,676),new Point (3316,676),new Point (3276,700),new Point (3176,896),new Point (3176,940),new Point (3216,976),new Point (3264,1056),new Point (3352,1088),new Point (3400,1232),new Point (3228,1420),new Point (3172,1516),new Point (3120,1580),new Point (3080,1668),new Point (3216,1668),new Point (3540,1432),new Point (3556,1180),new Point (3504,1068),new Point (3452,1040),new Point (3400,924),new Point (3568,924),new Point (3616,1112),new Point (3632,1144),new Point (3608,1504),new Point (3616,1584),new Point (3588,1624),new Point (3552,1716),new Point (3544,1736),new Point (3388,1840),new Point (3352,1844),new Point (3276,1872),new Point (3124,1932),new Point (3104,2020),new Point (3208,2056),new Point (3284,2104),new Point (3820,2080),new Point (4016,1860),new Point (4320,1956),new Point (4448,2012),new Point (4524,2068),new Point (4768,2068),new Point (5104,2004)];
+var altPath3 = [new Point (496,0),new Point (516,36),new Point (696,352),new Point (576,1048),new Point (456,1332),new Point (424,1784),new Point (576,1888),new Point (608,2184),new Point (1004,2292),new Point (1164,2300),new Point (1316,2288),new Point (1444,2372),new Point (1624,2380),new Point (1728,2404),new Point (1832,2388),new Point (1952,2384),new Point (2168,2344),new Point (2256,2344),new Point (2288,2336),new Point (2384,2140),new Point (2700,1868),new Point (2704,1820),new Point (2744,1668),new Point (2672,1316),new Point (2692,1212),new Point (2704,1144),new Point (3192,860),new Point (3280,860),new Point (3544,1188),new Point (3476,1372),new Point (3392,1508),new Point (3124,1328),new Point (3192,1196),new Point (3432,884),new Point (3588,780),new Point (3624,704),new Point (3792,568),new Point (4028,600),new Point (4108,728),new Point (4164,792),new Point (4224,840),new Point (4360,1204),new Point (4848,1236),new Point (5084,1196)];
+ 
+var altPathsArray=new Array(altPath1,altPath2,altPath3);
+
+var altPath; 
+chooseAltPath(altPathsArray);
+
+// selects and styles the possible path
+function chooseAltPath(altPathArray){
+	var randomInt = getRandomInt(0,altPathArray.length-1);
+	console.log (randomInt);
+	altPath = new Path(altPathArray[randomInt]);
+	altPath.strokeWidth = 5;
+	//altPath.simplify(70);
+	altPath.smooth();
+	//altPath.strokeJoin = 'round'; 
+	altPath.strokeColor = 'black';	
+	
+} 
+
+// http://stackoverflow.com/questions/10134237/javascript-random-integer-between-two-numbers
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+ // makes an array of points along the randomly chosen path
+var amount =1700;
+var length2 = altPath.length;
+
+var pointArray=new Array();
+for (var i = 0; i < amount + 1; i++) {
+    var offset = i / amount * length2;
+    // Find the point on the path at the given offset:
+    var point = altPath.getPointAt(offset);
+	pointArray.push (point);
+
+}
+//console.log("point" + pointArray);
+
+
+
+// circle to be cloned to create all the other circles
+var myCircle = new Path.Circle(pointArray[0], 50);
+myCircle.fillColor = 'gray';
+
+var speed = 20;
+var count = 0;  
+//var destination = pointArray[0]; 
+
+
+var randomTime = Math.random() * 700 + 900;
+plugRandomCirclesIn(myCircle);
+
+// this function moves a given shape along any path
+function plugRandomCirclesIn ( shape ){
+//console.log ("bang");
+
+//loo();
+function looo(){
+setTimeout(function () {              
+      					var cloned = randomCircles(shape);
+      					addEventListeners(cloned);
+      					iterateOverPnts(cloned);
+      					randomTime = Math.random()+10 * 500 ;
+      					looo(); 
+   				}, randomTime);}
+   				looo();
+   				
+   		}
+
+
+function randomlySetUpPnt (original){
+	var randomIterator = getRandomInt(0, pointArray.length-1);
+	var f = pointArray[randomIterator];
+	var circ = randomCircles (original);
+}
+
+function randomCircles (shape){
+		var cloned = shape.clone ();
+      	var randScale = (Math.random())*3;
+      	cloned.scale(randScale);
+      	return cloned;
+}
+
+function randomlySetUpPnts (original){
+	for ( var i = 0; i < 100; i++)
+	{
+		randomlySetUpPnt (original)
+	}
+}
+
+//randomlySetUpPnt(myCircle);
+
+function iterateOverPnts ( shape ){
+//console.log ("bang");
+var i =0;
+shape.position = pointArray [i];
+function looo(){
+setTimeout(function () {              
+      					i++;                    
+      					if (i < pointArray.length) {          
+        		 			shape.position = pointArray [i];
+        		 			//console.log ("bang1"); 
+        		 			looo();            
+      					}
+      					else if (i === pointArray.length) 
+      					{
+      						//console.log("bang2");
+      						//iterateOverPnts();
+      					}	                       
+   				}, 15);}
+   				looo();  				
+   		}
+   		
+
+
+var textGroup = new Group ();
+// add rect mask 
+// then some strings of moving ti 
+
+
+
+// draw header
+
+var title =document.createElement("IMG");
+title.src = "title.png";
+var header = new Raster (title);  
+header.scale (.75) ;
+header.position.x = 2700;
+header.position.y = 400;
+
+/*				
+var path;
+function onMouseDown(event) {
+    // If we produced a path before, deselect it:
+    if (path) {
+        path.selected = false;
+    }
+
+    // Create a new path and set its stroke color to black:
+    path = new Path();
+    path.add(event.point);
+    path.strokeWidth = 5;
+	path.strokeJoin = 'round'; 
+    path.strokeColor = 'black';
+
+    // Select the path, so we can see its segment points:
+    path.fullySelected = true;
+}
+// While the user drags the mouse, points are added to the path
+// at the position of the mouse:
+function onMouseDrag(event) {
+    path.add(event.point);
+}
+ 
+
+var savePath;
+// When the mouse is released, we simplify the path:
+function onMouseUp(event) {
+    var segmentCount = path.segments.length;
+
+    // When the mouse is released, simplify it:
+    //path.smooth();
+    path.simplify(70);
+    //path.smooth();
+    makePathIntoCode(path);
+    console.log(path);
+    savePath = path;
+    // Select the path, so we can see its segments:
+    path.fullySelected = true;
+}	
+  */
+//
+function makePathIntoCode ( path ){
+	var stringCode = "[";
+	console.log("length: " + path.segments.length)
+	for ( var i =0; i < path.segments.length; i++){
+		var xpos = path.segments[i].point.x;
+		var ypos = path.segments[i].point.y;
+		//var ypos = path.segments.Array[i].y;
+		/*
+		console.log ( "path " + path); 
+		console.log ("segs " + path.segments);
+		console.log ("points " + path.segments.point);
+		console.log ("seg as array " + path.segments[i]);
+		console.log ("getting that x " + path.segments[i].point.x);
+		console.log ("points as array" + path.segments.point[i]);
+		*/
+		var comma = ",";
+		if(i === path.segments.length - 1) {
+			comma = "";
+		}
+		stringCode += "new Point (" + xpos + "," + ypos + ")" + comma;
+	}
+	stringCode += "];";
+	//console.log(stringCode);
+}
+
+
+//var dest = pointArray [1];
+var multx = 0;
+var multy = 0;
+var lastScale = 1;
+
+
+
+//var text4Circle = new Path.Circle(new Point(100, 100), 800);
+//text4Circle.fillColor = 'black';
+//addEventListeners(text4Circle);
+
+var currentTweet;
+var rectPath;
+function addEventListeners(textCircle){
+          textCircle.onClick = function () {
+              console.log('click')
+              //this.fillColor='yellow';
+              console.log ("this is length" +twitArray.length);
+              console.log(currentTweet.img);
+          }
+
+          textCircle.onMouseEnter = function() {
+          	  currentTweet = twitArray.pop();
+              var tweetText = currentTweet.text;
+              console.log(tweetText);
+              // draw box at location
+              console.log(this.position);
+              drawRect(this);
+              checkLengthOfTwit();
+              console.log('in');
+              //this.fillColor='blue';
+		  } 
+		  textCircle.onMouseLeave = function() {
+             //remove the Image
+             //rectPath.remove();
+             console.log('out');
+             //this.fillColor='red';
+             this.detach('mouseleave', function() {
+			 });
+			 this.detach('mouseenter', function() {
+			 });
+		  }
+
+}
+var groupOfTweets = new Group();
+function drawRect(circ){
+	//var rectSize = new Size(200, 100);
+	//var rectangle = new Rectangle(new Point(circ.position.x, circ.position.y), rectSize);
+	//var cornerSize = new Size(5, 2);
+	//rectPath = new Path.RoundRectangle(rectangle, cornerSize);
+	//rectPath.fillColor = 'black';
+	var position = new Point(circ.position.x, circ.position.y);
+	circ.fillColor = "white";
+	circ.strokeColor = 'black';
+	// Set its stroke width to 10:
+	circ.strokeWidth = 5;
+	//var newCirc = new Path.Circle(position, 100);
+	//newCirc.fillColor = "purple";
+	console.log("ref");
+	var text = new PointText(200,1000);
+	groupOfTweets.appendTop(text);
+	console.log(groupOfTweets.children.length);
+	if (groupOfTweets.children.length > 1){
+		groupOfTweets.children[0].remove();
+	}
+	//text.paragraphStyle.justification = 'center';
+	text.fillColor = 'green';
+	text.content = currentTweet.text;
+	text.scale(8);
+	//var topLeft = position;
+	//var rectSize = new Size(500, 500);
+	//var rect = new Path.Rectangle(topLeft, rectSize);
+	//rect.fillColor = 'orange';
+	//text.fitBounds(rect.bounds);
+}
+
+//draw a text box on enter 
+// make it disapear on out
+
+
+function checkLengthOfTwit(){
+console.log("checking");
+if (twitArray.length <= 10){
+	console.log("time to Refresh");
+	makeArrayOfTwit();
+}
+ }
+
+function onFrame(event) {
+
+
+    if(event.count % 2 === 0){
+        var scale = (Math.sin(event.time*1.5) + 9) / 2; 
+        groupOfImgs.children[0].scale(scale/ lastScale); 
+        lastScale =scale; 
+    }
+
+    
+}
+
+var randomArrayLength = 25;
+var arrayOfRandomWords = new Array();
+randomWord();
+
+function returnRandom(){
+	var word = arrayOfRandomWords.pop();
+	word = word.word;
+	console.log ("here is the word" + word);
+	//if (arrayOfRandomWords.length <= 3){
+	//	console.log("refreshing random word");
+	//	randomWord();
+	//}
+	return word
+}
+var RandListIsReady = false; 
+
+
+function randomWord() {
+		console.log("I am refreshing");
+		$.getJSON('http://api.wordnik.com/v4/words.json/randomWords?minCorpusCount=10000&minDictionaryCount=' + randomArrayLength + '&excludePartOfSpeech=proper-noun,proper-noun-plural,proper-noun-posessive,suffix,family-name,idiom,affix&hasDictionaryDef=true&includePartOfSpeech=noun,verb,adjective,definite-article,conjunction&limit=26&maxLength=7&api_key=2e070b5a363744eab5512011de50b4168798a018e48ab4357',
+ 		function (data) {
+      		console.log(data);
+      		arrayOfRandomWords = data;
+      		//console.log(arrayOfRandomWords);
+      		console.log(arrayOfRandomWords[0].word);
+  		});
+}
+
+var tryNewFunct = whenAvailableRandom(returnRandom);
+console.log("i'm trying" + tryNewFunct);
+
+
+
+var randomReady = 0;
+
+function whenAvailableRandom (callback) {
+    var interval = 10; // ms
+    window.setTimeout(function() {
+    	//console.log(name.length);
+    	//console.log(arrayOfRandomWords.length);
+    	//console.log(arrayOfRandomWords);
+        if (arrayOfRandomWords.length >= randomArrayLength) {
+        	console.log("calling");
+            //var ranWord = returnRandom();
+            //console.log(ranWord);
+            //return ranWord;
+			randomReady = 1;
+			makeArrayOfTwit();
+			
+        } else {
+        	console.log("waiting");
+            window.setTimeout(arguments.callee, interval);
+        }
+    }, interval);
+}
+
+
+
+//make an Array of 20 random esc tweets
+var randomSearchTerms = ["appointment","spot","bending","genius","guide","afternoon","driving","green","necessary","sundry", "boom", "bog", "gift", "singing", "arguing", "stupidity", "fuller", "cats","chocolate","art","feel"];
+
+var twitArrayLength = 20;
+var twitArray = new Array();
+
+
+function makeArrayOfTwit(){
+	for (var i = 0; i < twitArrayLength; i++){
+		if (randomReady === 1){
+			console.log("realRandom");
+			var randomSearch = returnRandom();
+		}
+		else{
+			console.log("not realRandom");
+			var randomSearch = getRandomSearchTerm();
+		}
+		$.getJSON('http://search.twitter.com/search.json?q=' + randomSearch + '&rpp=1&callback=?',
+ 		function (data) {
+      		//alert('hello world from twitter');
+    		//console.log(data);
+    		var objtwt = extract(data);
+    		//console.log(objtwt);
+    		twitArray.push(objtwt);
+  			//console.log ("twitArray is: " + twitArray.length); 
+  		});
+
+  	}
+  	
+}
+
+
+
+function logIt(){
+	//console.log ("twitArray : " + twitArray.length); 
+	//console.log (twitArray); 
+}
+
+function whenAvailable (callback) {
+    var interval = 10; // ms
+    window.setTimeout(function() {
+    	//console.log(name.length);
+    	console.log(twitArray.length);
+        if (twitArray.length === twitArrayLength) {
+        	//console.log("calling");
+            callback();
+        } else {
+        	//console.log("waiting");
+            window.setTimeout(arguments.callee, interval);
+        }
+    }, interval);
+}
+
+whenAvailable(randomWord);
+
+
+function getRandomSearchTerm(){
+	var randomIndex = getRandomInt(0,randomSearchTerms.length-1);
+	//console.log("index" + randomIndex);
+	var term = randomSearchTerms[randomIndex];
+	//console.log("term" + term);
+	return term;
+}
+
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+//getRandomSearchTerm();
+
+//extract the relavent info out of one tweet
+function extract(dat){
+      		var tweetObj = new Object();
+    		//console.log("the data" + dat);
+    		var theTweet = dat.results[0].text;
+    		tweetObj.text = theTweet;
+    		//console.log("the tweet" + theTweet);
+    		var theImg = dat.results[0].profile_image_url;
+    		tweetObj.img = theImg; 
+    		//console.log("the img url" + theImg);
+    		//console.log(tweetObj);
+    		return tweetObj;
+}
+
+
+
+	</script>
+<script type="text/javascript">
+
+</script>
+</head>
+<body style='background-color:white'>
+	<canvas id="canvas" resize></canvas>
+</body>
+</html>
